@@ -1,0 +1,4 @@
+# Do not include your venv folder
+venv/
+# Pychache files 
+__pycache__/
