@@ -2,3 +2,7 @@
 venv/
 # Pychache files 
 __pycache__/
+# Do not include your .env file
+.env
+# .py files we don't need to push to our repo
+test_dotenv.py
