@@ -6,3 +6,5 @@ __pycache__/
 .env
 # .py files we don't need to push to our repo
 test_dotenv.py
+# Do not upload logs
+logs/

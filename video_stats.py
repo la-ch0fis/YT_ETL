@@ -1,5 +1,6 @@
 import requests, json
 import os
+from datetime import date 
 from dotenv import load_dotenv
 
 load_dotenv(dotenv_path="./.env")
@@ -138,8 +139,16 @@ def extract_video_data(video_ids):
         raise e
 
 
+def save_to_json(extracted_data):
+    """ This function will save the data related to the videos we extratced and save it in a JSON file """
+    file_path = f"./data/YT_data_{date.today()}.json"
+    # utf-8 encoding ensures that the file can handle special characters
+    with open(file_path, "w", encoding="utf-8") as json_outfile:
+        json.dump(extracted_data, json_outfile, indent=4, ensure_ascii=False)
+
 
 if __name__ == "__main__":
     playlist_id = get_playlist_id()
     video_ids = get_video_ids(playlist_id)
-    extract_video_data(video_ids)
+    vide_data = extract_video_data(video_ids)
+    save_to_json(vide_data)
