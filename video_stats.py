@@ -73,7 +73,73 @@ def get_video_ids(playlist_id):
         raise e
 
 
+""" def batch_list(video_id_list, batch_size):
+    Ok, Cochise, listen up, this "yield" keyword is a game-changer. 
+     The breakdown: "return" vs "yield" 
+     In a normal function, return is the end of the line. It gives you the data, kills the function, and clears the memory.
+     "yield" is different, cuz, it creates a GENERATOR. Instead of finishing, the function "pauses", gives you one piece of data, 
+     and waits for you to ask for the next one. 
+     Walking through batch_list
+     This specific function is a "Batcher." It's designed to take a massive list (like 1 million video_ids) and break it into small, manageable chunks 
+     so you don't crash your RAM or hit an API rate limit.
+     range(0, len(video_id_list), batch_size): This creates a loop that jumps by the batch_size. If the size is 10, it goes 0, 10, 20, 30...
+
+     video_id_list[video_id: video_id + batch_size]: This slices the list. If video_id is 0 and batch_size is 10, it grabs items 0 through 9.
+
+     The yield part:
+     Instead of making a new big list of lists, it produces one slice at a time.
+
+     The function "remembers" where it left off.
+     When the next loop starts, it picks up exactly at the next video_id.
+     
+
+    for video_id in range(0, len(video_id_list), batch_size):
+        yield video_id_list[video_id: video_id + batch_size] """
+
+
+def extract_video_data(video_ids):
+    extracted_data = []
+
+    def batch_list(video_id_list, batch_size):
+        for video_id in range(0, len(video_id_list), batch_size):
+            yield video_id_list[video_id: video_id + batch_size] 
+    # We loop through the whole list in batches with the different video ids using the join method for the URL build
+    # So, it'll be something like this: 'EDRRT45b', 'rwn-XXymNG4', 'Snd-VYLx064'  
+    try:
+        for batch in batch_list(video_ids, maxResults):
+            video_ids_str = ",".join(batch)
+            base_url = f"https://youtube.googleapis.com/youtube/v3/videos?part=contentDetails&part=snippet&part=statistics&id={video_ids_str}&key={API_KEY}"
+            # Then we check for errors and get the response in JSON format
+            response = requests.get(base_url)
+            response.raise_for_status()
+            data = response.json()
+            # Now we use the get method to get the values we need and build a dictionary: videoId, snippet, content details and statistics
+            # We'll use the empty list defined at the beginning as a value to return if the specified key does not exist.
+            for item in data.get("items", []):
+                video_id = item["id"]
+                snippet = item["snippet"]
+                contentDetails = item["contentDetails"] 
+                statistics = item["statistics"]
+                # We populate the dictionary with the obtained values
+                video_data = {
+                    "video_id": video_id,
+                    "title": snippet["title"],
+                    "publishedAt": snippet["publishedAt"],
+                    "duration": contentDetails["duration"],
+                    "viewCount": statistics.get("viewCount", None),
+                    "likeCount": statistics.get("likeCount", None),
+                    "commentCount": statistics.get("commentCount", None)
+                }
+                # The we append the data and return it
+                extracted_data.append(video_data)
+        return extracted_data
+
+    except requests.exceptions.RequestException as e:
+        raise e
+
+
 
 if __name__ == "__main__":
     playlist_id = get_playlist_id()
-    get_video_ids(playlist_id)
+    video_ids = get_video_ids(playlist_id)
+    extract_video_data(video_ids)
