@@ -41,8 +41,8 @@ def get_playlist_id():
 
 
 def get_video_ids(playlist_id):
-    ''' According to the API docs, we need a page token because the max number of videos displayed per page is 50, so we need page tokens
-     to get all videos of the YT channel '''
+    """ According to the API docs, we need a page token because the max number of videos displayed per page is 50, so we need page tokens
+     to get all videos of the YT channel """
     
     video_ids = [] # Contains all videos of the channel
     page_token = None
