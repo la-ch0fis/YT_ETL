@@ -29,7 +29,7 @@ def get_playlist_id():
         channel_items = data['items'][0]
         # print(channel_items)
 
-        #now we get the playlost id:
+        #now we get the playlist id:
         channel_playlistId = channel_items['contentDetails']['relatedPlaylists']['uploads']
         # print(channel_playlistId)
 
