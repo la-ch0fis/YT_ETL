@@ -6,12 +6,12 @@ from dotenv import load_dotenv
 load_dotenv(dotenv_path="./.env")
 
 API_KEY = os.getenv("API_KEY")
-CHANNEL_HANDLER = "Koala.puffss"
+CHANNEL_HANDLE = os.getenv("CHANNEL_HANDLE")  # "Koala.puffss"
 maxResults = 50
 
 def get_playlist_id():
     try:
-        url = f"https://youtube.googleapis.com/youtube/v3/channels?part=contentDetails&forHandle={CHANNEL_HANDLER}&key={API_KEY}"
+        url = f"https://youtube.googleapis.com/youtube/v3/channels?part=contentDetails&forHandle={CHANNEL_HANDLE}&key={API_KEY}"
 
         response = requests.get(url)
         response.raise_for_status()
@@ -133,6 +133,7 @@ def extract_video_data(video_ids):
                 }
                 # The we append the data and return it
                 extracted_data.append(video_data)
+                
         return extracted_data
 
     except requests.exceptions.RequestException as e:
