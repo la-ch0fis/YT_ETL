@@ -1,14 +1,21 @@
 import requests, json
-import os
+# import os
 from datetime import date 
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
+from airflow.decorators import task
+from airflow.models import Variable
 
-load_dotenv(dotenv_path="./.env")
+# load_dotenv(dotenv_path="./.env")
 
-API_KEY = os.getenv("API_KEY")
-CHANNEL_HANDLE = os.getenv("CHANNEL_HANDLE")  # "Koala.puffss"
+# API_KEY = os.getenv("API_KEY")
+# CHANNEL_HANDLE = os.getenv("CHANNEL_HANDLE")
+API_KEY = Variable.get("API_KEY")
+CHANNEL_HANDLE = Variable.get("CHANNEL_HANDLE")
+
+
 maxResults = 50
 
+@task
 def get_playlist_id():
     try:
         url = f"https://youtube.googleapis.com/youtube/v3/channels?part=contentDetails&forHandle={CHANNEL_HANDLE}&key={API_KEY}"
@@ -39,7 +46,7 @@ def get_playlist_id():
         raise e
 
 
-
+@task
 def get_video_ids(playlist_id):
     """ According to the API docs, we need a page token because the max number of videos displayed per page is 50, so we need page tokens
      to get all videos of the YT channel """
@@ -97,7 +104,7 @@ def get_video_ids(playlist_id):
     for video_id in range(0, len(video_id_list), batch_size):
         yield video_id_list[video_id: video_id + batch_size] """
 
-
+@task
 def extract_video_data(video_ids):
     extracted_data = []
 
@@ -139,7 +146,7 @@ def extract_video_data(video_ids):
     except requests.exceptions.RequestException as e:
         raise e
 
-
+@task
 def save_to_json(extracted_data):
     """ This function will save the data related to the videos we extratced and save it in a JSON file """
     file_path = f"./data/YT_data_{date.today()}.json"
