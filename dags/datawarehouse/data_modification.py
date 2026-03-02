@@ -1,0 +1,110 @@
+import logging
+
+logger = logging.getLogger(__name__)
+table = "yt_api"
+
+# Function that will insert API data, which we loaded from the JSON file into the staging and core tables.
+def insert_rows(cur, conn, schema, row):
+    """
+       cur: cursor for executing SQL statments
+       conn: connection to the db
+       schema: staging or core
+       row: dictionary containing the data to be inserted 
+
+       The s stands for "string" . It's a format specifier telling psycopg2 what type of data to expect.
+
+       In %(video_id)s:
+       video_id = the dictionary key
+
+       s = the data type (string)
+
+       So %(video_id)s means: "Replace this with the value from row['video_id'] and treat it as a string."
+    """
+    try:
+        if schema == 'staging':
+            video_id = 'video_id' # Variablethat will be used for logging purposes
+            cur.execute(
+                f"""INSERT INTO {schema}.{table}("Video_ID", "Video_Title", "Upload_Date", "Duration", "Video_Views", "Likes_Count", "Comments_Count") 
+                VALUES (%(video_id)s, %(title)s, %(publishedAt)s, %(duration)s, %(viewCount)s, %(likeCount)s, %(commentCount)s);
+                """, row
+            )
+        else:  # Here the VALUES part has the actual column names of the core table, not the JSON columns 
+            video_id = 'Video_ID'
+            cur.execute(
+                f"""INSERT INTO {schema}.{table}("Video_ID", "Video_Title", "Upload_Date", "Duration", "Video_Views", "Likes_Count", "Comments_Count") 
+                VALUES (%(Video_ID)s, %(Video_Title)s, %(Upload_Date)s, %(Duration)s, %(Video_Views)s, %(Likes_Count)s, %(Comments_Count)s);
+                """, row
+            )
+
+        conn.commit()
+
+        logger.info(f"Inserted row with the video id: {row[video_id]}")
+    except Exception as e:
+        logger.error(f"Error inserting row with Video_ID: {row[video_id]}")
+        raise e
+
+
+def update_rows(cur, conn, schema, row):
+    """
+       So, we need this function to update the data tha is constantly changing, like the number of views, the likes and possibly the title of the video, cuz
+       Will get the same params as the insert function above.
+    """
+    try:
+        # Staging: The variable names are based on the JSON
+        if schema == 'staging':
+            video_id = 'video_id'
+            upload_date = 'publishedAt'
+            video_title = 'title'
+            video_views = 'viewCount'
+            likes_count = 'likeCount'
+            comments_count = 'commentCount'
+        # Core: The varible names are based on the columns Core table
+        else:
+            video_id = 'Video_ID'
+            upload_date = 'Upload_Date'
+            video_title = 'Video_Title'
+            video_views = 'Video_Views'
+            likes_count = 'Likes_Count'
+            comments_count = 'Comments_Count'
+        
+        cur.execute(
+            f"""
+            UPDATE {schema}.{table}
+            SET "Video_Title" = %({video_id})s,
+                "Video_Views" = %({video_views})s,
+                "Likes_Count" = %({likes_count})s,
+                "Comments_Count = %({comments_count})s"
+            WHERE "Video_ID" = %({video_id})s AND Upload_Date = %({upload_date})s;
+            """, row
+        )
+
+        conn.commit()
+        logger.info(f"Updated row with Video_ID: {row[video_id]}")
+    except Exception as e:
+        logger.error(f"Error updating row with Video_ID: {row[video_id]} - {e}")
+        raise e
+
+
+def delete_rows(cur, conn, schema, ids_to_delete):
+    """
+       So, there can be instances where the channel we're extracting data from deletes a video, we need to take care of this scenario
+       as it might lead to erroneous data in the tables
+       We need to convert the IDs to a proper SQL format by using the .join function and concatenating different IDs in case we need to delete more
+       than one video, cuz.
+    """
+    try:
+        ids_to_delete = f"""({', '.join(f"'{id}'" for id in ids_to_delete)})"""
+        cur.execute(
+            f"""
+            DELETE FROM {schema}.{table}
+             WHERE "Video_ID" in {ids_to_delete}; 
+            """
+        )
+
+        conn.commit()
+        logger.info(f"Deleted rows with the Video_ID: {ids_to_delete}")
+    except Exception as e:
+        logger.error(f"Error while deleting rows from Video_ID: {ids_to_delete} - {e}")
+        raise e
+
+

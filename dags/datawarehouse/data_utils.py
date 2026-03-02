@@ -5,18 +5,18 @@ table = "yt_api"
 
 
 """
-To interact with the database using Python we'll use a ver common adapter called Psycopg2
-Then we will need a package from Psycopg2 that is called RealDictCursor which allows the retrieval of reports using Python dictionaries 
-and not default tuples.
+    To interact with the database using Python we'll use a ver common adapter called Psycopg2
+    Then we will need a package from Psycopg2 that is called RealDictCursor which allows the retrieval of reports using Python dictionaries 
+    and not default tuples.
 """
 
 def get_conn_cursor():
     """
-    We set up the Postgres hook by defining a variable hook with 2 arguments: posgres_conn_id and database
-    We defined this already in the docker-compose, you'll find it as AIRFLOW_CONN_POSTGRES_DB_YT_ELT.
-    The second argument called database you'll find it in the .env file under the databse details.
-    Now that we defined the hook we proceed to define the connection using the get_conn method.
-    We also need to define the cursor by specifying the cursor method with the argument: cursfor_factory=RealDictCursor
+        We set up the Postgres hook by defining a variable hook with 2 arguments: posgres_conn_id and database
+        We defined this already in the docker-compose, you'll find it as AIRFLOW_CONN_POSTGRES_DB_YT_ELT.
+        The second argument called database you'll find it in the .env file under the databse details.
+        Now that we defined the hook we proceed to define the connection using the get_conn method.
+        We also need to define the cursor by specifying the cursor method with the argument: cursfor_factory=RealDictCursor
     """
     hook = PostgresHook(posgres_conn_id="postgres_db_yt_elt", database="elt_db")
     conn = hook.get_conn()
