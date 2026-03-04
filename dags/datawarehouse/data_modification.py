@@ -15,9 +15,7 @@ def insert_rows(cur, conn, schema, row):
 
        In %(video_id)s:
        video_id = the dictionary key
-
        s = the data type (string)
-
        So %(video_id)s means: "Replace this with the value from row['video_id'] and treat it as a string."
     """
     try:

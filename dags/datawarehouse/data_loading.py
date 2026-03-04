@@ -7,7 +7,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 # Function that will be responsible of openning the JSON file, reading the data and parsing it into a Python object
-def load_path():
+def load_data():
     # Path where the JSON files are stored
     file_path = f"./data/YT_data_{date.today()}.json"
     try:

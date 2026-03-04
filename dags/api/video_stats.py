@@ -11,9 +11,15 @@ from airflow.models import Variable
 # CHANNEL_HANDLE = os.getenv("CHANNEL_HANDLE")
 API_KEY = Variable.get("API_KEY")
 CHANNEL_HANDLE = Variable.get("CHANNEL_HANDLE")
-
-
 maxResults = 50
+
+"""
+Airflow's @task:
+It's a decorator that tells Airflow: "Hey, this function is a task. When the DAG runs, I want you to execute this function on a worker, 
+and manage its dependencies, retries, etc."
+It doesn't change what your function does—it just registers it with Airflow's internals so it behaves like a proper task.
+So yeah, you got the concept. Decorators = adding functionality around a function. @task = adding "Airflow task" functionality.
+"""
 
 @task
 def get_playlist_id():
@@ -104,6 +110,7 @@ def get_video_ids(playlist_id):
     for video_id in range(0, len(video_id_list), batch_size):
         yield video_id_list[video_id: video_id + batch_size] """
 
+
 @task
 def extract_video_data(video_ids):
     extracted_data = []
@@ -145,6 +152,7 @@ def extract_video_data(video_ids):
 
     except requests.exceptions.RequestException as e:
         raise e
+
 
 @task
 def save_to_json(extracted_data):
