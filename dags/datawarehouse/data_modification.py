@@ -29,8 +29,8 @@ def insert_rows(cur, conn, schema, row):
         else:  # Here the VALUES part has the actual column names of the core table, not the JSON columns 
             video_id = 'Video_ID'
             cur.execute(
-                f"""INSERT INTO {schema}.{table}("Video_ID", "Video_Title", "Upload_Date", "Duration", "Video_Views", "Likes_Count", "Comments_Count") 
-                VALUES (%(Video_ID)s, %(Video_Title)s, %(Upload_Date)s, %(Duration)s, %(Video_Views)s, %(Likes_Count)s, %(Comments_Count)s);
+                f"""INSERT INTO {schema}.{table}("Video_ID", "Video_Title", "Upload_Date", "Duration", "Video_Type", "Video_Views", "Likes_Count", "Comments_Count") 
+                VALUES (%(Video_ID)s, %(Video_Title)s, %(Upload_Date)s, %(Duration)s, %(Video_Type)s, %(Video_Views)s, %(Likes_Count)s, %(Comments_Count)s);
                 """, row
             )
 
@@ -68,7 +68,7 @@ def update_rows(cur, conn, schema, row):
         cur.execute(
             f"""
             UPDATE {schema}.{table}
-            SET "Video_Title" = %({video_id})s,
+            SET "Video_Title" = %({video_title})s,
                 "Video_Views" = %({video_views})s,
                 "Likes_Count" = %({likes_count})s,
                 "Comments_Count" = %({comments_count})s

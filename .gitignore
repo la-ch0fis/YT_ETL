@@ -8,3 +8,8 @@ __pycache__/
 test_dotenv.py
 # Do not upload logs
 logs/
+# Any other files we don't need
+*.deb
+*.zip
+*.tar.gz
+**/dbeaver-ce*
