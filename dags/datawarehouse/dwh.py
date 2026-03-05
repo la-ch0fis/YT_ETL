@@ -8,6 +8,7 @@ from airflow.decorators import task
 logger = logging.getLogger(__name__)
 table = "yt_api"
 
+
 @task
 def staging_table():
     """
@@ -78,7 +79,7 @@ def core_table():
             current_video_ids.add(row["Video_ID"])
             if len(table_ids) == 0: # Check if table is empty (which means is the first load of data), if yes we transform the row and insert into the table
                 transformed_row = transform_data(row)
-                insert_rows(cur, conn, schema, rows)
+                insert_rows(cur, conn, schema, transformed_row)
             else: # If we already have data present in the table then we update it
                 transformed_row = transform_data(row) # We transform the data
                 if transformed_row["Video_ID"] in table_ids:

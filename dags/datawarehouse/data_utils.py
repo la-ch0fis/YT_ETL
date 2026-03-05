@@ -18,9 +18,9 @@ def get_conn_cursor():
         Now that we defined the hook we proceed to define the connection using the get_conn method.
         We also need to define the cursor by specifying the cursor method with the argument: cursfor_factory=RealDictCursor
     """
-    hook = PostgresHook(posgres_conn_id="postgres_db_yt_elt", database="elt_db")
+    hook = PostgresHook(postgres_conn_id="postgres_db_yt_elt", database="elt_db")
     conn = hook.get_conn()
-    cur = conn.cursor(cursfor_factory=RealDictCursor)
+    cur = conn.cursor(cursor_factory=RealDictCursor)
     # NOTE: Make sure to always close the cursor and the connection to free up resources
     # For popuses of making the code more modular, I'll create a separate function to close the cursor and connection
     # cur.close()

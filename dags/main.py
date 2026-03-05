@@ -48,8 +48,8 @@ with DAG(
     catchup=False   
 ) as dag:
     #Define tasks
-    update_staging = staging_table
-    update_core = core_table
+    update_staging = staging_table()
+    update_core = core_table()
 
     #Define task dependencies
     update_staging >> update_core

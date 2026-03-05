@@ -71,15 +71,16 @@ def update_rows(cur, conn, schema, row):
             SET "Video_Title" = %({video_id})s,
                 "Video_Views" = %({video_views})s,
                 "Likes_Count" = %({likes_count})s,
-                "Comments_Count = %({comments_count})s"
-            WHERE "Video_ID" = %({video_id})s AND Upload_Date = %({upload_date})s;
+                "Comments_Count" = %({comments_count})s
+            WHERE "Video_ID" = %({video_id})s 
+              AND "Upload_Date" = %({upload_date})s;
             """, row
         )
 
         conn.commit()
         logger.info(f"Updated row with Video_ID: {row[video_id]}")
     except Exception as e:
-        logger.error(f"Error updating row with Video_ID: {row[video_id]} - {e}")
+        logger.error(f"Error updating row with Video_ID: {row[video_id]} - {e} - in table {schema}.{table}")
         raise e
 
 

@@ -36,7 +36,7 @@ def parse_duration(duration_str):
 
 def transform_data(row):
     duration_td = parse_duration(row["Duration"])
-    row["Duration"] = (datetime.min + duration_td).time # datetime.min is the earliest representable datetime in Python.
+    row["Duration"] = (datetime.min + duration_td).time() # datetime.min is the earliest representable datetime in Python.
     # print(datetime.min) --> 0001-01-01 00:00:00 -or- print(date.min) --> 0001-01-01 <-- for this we need to import "date" also.
     # Now, let's define the Video Type based on the "Duration" we just extracted. Less than a minute is a short and more then 1 min is a normal video.
     row["Video_Type"] = "Shorts" if duration_td.total_seconds() <= 60 else "Normal"
