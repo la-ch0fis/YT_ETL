@@ -2,6 +2,7 @@ from airflow import DAG
 import pendulum
 from datetime import datetime, timedelta
 from api.video_stats import get_playlist_id, get_video_ids, extract_video_data, save_to_json
+from datawarehouse.dwh import staging_table, core_table
 
 # pendulum library is used for dealing with timezones
 # Define the local time-zone
@@ -19,8 +20,7 @@ default_args = {
     "max_active_runs":1,
     "dagrun_timeout":timedelta(hours=1),
     "start_date":datetime(2026,1,1, tzinfo=local_tz),
-    # "end_date":datetime(2026,3,10, tzinfo=local_tz)
-    
+    # "end_date":datetime(2026,3,10, tzinfo=local_tz)  
 }
 
 with DAG(
@@ -38,3 +38,18 @@ with DAG(
 
     #Define task dependencies
     playlist_id >> video_ids >> extracted_data >> save_to_json_raw
+
+
+with DAG(
+    dag_id="update_db",
+    default_args=default_args,
+    description="DAG to process JSON file and insert data into both staging and core schema",
+    schedule="0 16 * * *",
+    catchup=False   
+) as dag:
+    #Define tasks
+    update_staging = staging_table
+    update_core = core_table
+
+    #Define task dependencies
+    update_staging >> update_core
