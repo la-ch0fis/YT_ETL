@@ -3,10 +3,12 @@ import pendulum
 from datetime import datetime, timedelta
 from api.video_stats import get_playlist_id, get_video_ids, extract_video_data, save_to_json
 from datawarehouse.dwh import staging_table, core_table
+from dataquality.soda import yt_elt_data_quality
 
 # pendulum library is used for dealing with timezones
 # Define the local time-zone
 local_tz = pendulum.timezone("America/Mexico_City")
+
 
 # Default Args
 default_args = {
@@ -22,6 +24,12 @@ default_args = {
     "start_date":datetime(2026,1,1, tzinfo=local_tz),
     # "end_date":datetime(2026,3,10, tzinfo=local_tz)  
 }
+
+
+# Variables
+staging_schema = "staging"
+core_schema = "core"
+
 
 with DAG(
     dag_id="produce_json",
@@ -53,3 +61,18 @@ with DAG(
 
     #Define task dependencies
     update_staging >> update_core
+
+
+with DAG(
+    dag_id="data_quality",
+    default_args=default_args,
+    description="DAG to check the data quality in staging and core schema",
+    schedule="0 17 * * *",
+    catchup=False   
+) as dag:
+    #Define tasks
+    soda_validate_staging = yt_elt_data_quality(staging_schema)
+    soda_validate_core = yt_elt_data_quality(core_schema)
+
+    #Define task dependencies
+    soda_validate_staging >> soda_validate_core
