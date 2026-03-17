@@ -14,9 +14,11 @@ from airflow.models import Variable, Connection, DagBag
 @pytest.fixture
 def api_key():
     """
-    This piece is temporarily updating the environment dictionary with key-value pais the we have here: AIRFLOW_VAR_API_KEY="MOCK_KEY1234"
+    This piece is temporarily updating the environment dictionary with key-value pairs that we have here: AIRFLOW_VAR_API_KEY="MOCK_KEY1234"
     Finaly we use "yield" to provide the value to the test that request this fixture.
-    As we saw in the Airflow section, the 'Variable.get()' fetches the value of any airflow variable and in this case we ant the 'API_KEY' variable.
+    As we saw in the Airflow section, the 'Variable.get()' fetches the value of any airflow variable and in this case we want the 'API_KEY' variable.
+    mock.patch.dict is where the lie-magic happens. What it does is to create a temporary fake version of 'os.environ' instead of actually change the 
+    computer's real environment variables. 
     """
     with mock.patch.dict("os.environ", AIRFLOW_VAR_API_KEY="MOCK_KEY1234"):
         yield Variable.get("API_KEY") 
@@ -25,7 +27,7 @@ def api_key():
 @pytest.fixture
 def channel_handle():
     """
-    This piece is temporarily updating the environment dictionary with key-value pais the we have here: AIRFLOW_VAR_API_KEY="MOCK_KEY1234"
+    This piece is temporarily updating the environment dictionary with key-value pairs that we have here: AIRFLOW_VAR_API_KEY="MOCK_KEY1234"
     Finaly we use "yield" to provide the value to the test that request this fixture.
     """
     with mock.patch.dict("os.environ", AIRFLOW_VAR_CHANNEL_HANDLE="Koala.puffss"):
