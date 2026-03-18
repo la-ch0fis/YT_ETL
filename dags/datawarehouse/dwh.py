@@ -48,7 +48,7 @@ def staging_table():
     except Exception as e:
         logger.error(f"An error ocurred during the update of {schema} table: {e}")
         raise e
-    # We need to finally close the fucking connection and the cursor to free up resources, this is very important, if this shit fails, the conn and cur will be closed
+    # We need to finally close the connection and the cursor to free up resources, this is very important, if this fails, the conn and cur will be closed
     finally:
         if conn and cur:
             close_conn_cursor(conn, cur)

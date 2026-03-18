@@ -56,4 +56,5 @@ def test_dags_integrity(dagbag):
         assert (
             expected_count == actual_count
         ), f"DAG {dag_id} has {actual_count} tasks, expected {expected_count}"
+        
         print(f"DAG ID: {dag_id} - Num Tasks: {len(dag.tasks)}")

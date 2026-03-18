@@ -3,11 +3,11 @@ from datetime import timedelta, datetime
 
 def parse_duration(duration_str):
     """
-       Now let's tranform some shit, cuz. The duration of the videos in yutu is specified using a standard: ISO 8601
+       Now let's tranform some data. The duration of the videos in yutu is specified using a standard: ISO 8601
        For example, for videos that last at least 1 minute and less than 1 hour use this format: PT#M#S. In whcih the letters PT indicate that the value
        specified is a period of time and the letters M and S refer to length in minutes and seconds respectively. The # characters preceding M and S letters are 
        both integers that specify the number of minutes or seconds of the video. If the video is at least 1 hour long, the durantion is in the format PT#H#M#S
-       Let's code this shit, Cochise!
+       Let's code this, Cochise! And do not forget to keep checking https://developers.google.com/youtube/v3 for any questions on how the API works.
     """
     duration_str = duration_str.replace('P', '').replace('T', '') # Getting rid of the PT 
     components = ['D','H','M','S'] # List with -> D: Day,H: Hour ,M: Minute, S: Second 
