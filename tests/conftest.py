@@ -56,3 +56,19 @@ def dagbag():
     To interact with the DAGs we need to import the DagBag class at the top which will collect all the DAGs information.
     """
     yield DagBag()
+
+
+# INTEGRATION TESTING PART: WE NEED TO MAKE SURE THAT THE DIFFERENT PARTS OF THE PROJECT/SYSTEM WORK TOGETHER, WHICH IN THIS CASE IS THE ELT PIPELINE 
+# A quick example of this would be the part where we transform the data from STAGING to CORE layer and sove it into the postgres table.
+# So, here what we want is to test that the transformed data, which we transformed using the python functions is updated correctly into the postgres DB.
+# Now, we'll aim to use real credentials for integration testing whcih makes sense becasue we need to test the db connection and API response.
+# These two can bahave different, specially when we're mocking functionality, we need to consider latency and possible API failures.
+@pytest.fixture
+def airflow_variable():
+    def get_airflow_variable(variable_name):
+        """
+        This function will return the value of the variables from the environment by specifying the varialbe name as an argument.
+        """
+        env_var = f"AIRFLOW_VAR_{variable_name.upper()}"
+        return os.getenv(env_var)
+    return get_airflow_variable

@@ -28,7 +28,7 @@ def test_dags_integrity(dagbag):
     assert dagbag.import_errors == {}, f"Import errors found: {dagbag.import_errors}"
     print("==========================")
     print(dagbag.import_errors)
-    # 2. All expected DAGs are loaded. First we gather all the DAG IDs in a list, then we get the actual DAG is from the DagBag keys
+    # 2. All expected DAGs are loaded. First we gather all the DAG IDs in a list, then we get the actual DAG ids from the DagBag keys
     expected_dag_ids = ["produce_json", "update_db", "data_quality"]
     loaded_dag_ids = list(dagbag.dags.keys())
     # Remember, these DAG IDs were defined in the main.py script under the 'dags' directory.
