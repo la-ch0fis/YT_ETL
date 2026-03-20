@@ -17,7 +17,7 @@ maxResults = 50
 Airflow's @task:
 It's a decorator that tells Airflow: "Hey, this function is a task. When the DAG runs, I want you to execute this function on a worker, 
 and manage its dependencies, retries, etc."
-It doesn't change what your function does—it just registers it with Airflow's internals so it behaves like a proper task.
+It doesn't change what your function does— it just registers it with Airflow's internals so it behaves like a proper task.
 So yeah, you got the concept. Decorators = adding functionality around a function. @task = adding "Airflow task" functionality.
 """
 

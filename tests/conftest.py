@@ -5,6 +5,7 @@
 # conftest.py ---> https://docs.pytest.org/en/stable/reference/fixtures.html
 import os
 import pytest
+import psycopg2
 from unittest import mock
 from airflow.models import Variable, Connection, DagBag
 
@@ -63,8 +64,37 @@ def dagbag():
 # So, here what we want is to test that the transformed data, which we transformed using the python functions is updated correctly into the postgres DB.
 # Now, we'll aim to use real credentials for integration testing whcih makes sense becasue we need to test the db connection and API response.
 # These two can bahave different, specially when we're mocking functionality, we need to consider latency and possible API failures.
+"""
+This is a FACTORY PATTERN inside a fixture.
+THE BURGER STAND ANALOGY 🍔
+
+Element	                        What It Is	                 Analogy
+@pytest.fixture	                The restaurant	             The place that makes food
+def airflow_variable():	        The restaurant itself	     The building where burgers are made
+def get_airflow_variable(...):	The burger maker             The PERSON who actually makes your burger
+return get_airflow_variable	    Giving you the burger maker	 Here's the guy who makes burgers, YOU tell him what to make
+WHAT'S ACTUALLY HAPPENING
+Step 1: Pytest sees @pytest.fixture and says "OK, I'll run this function when tests need it."
+Step 2: The outer function (airflow_variable) runs ONCE when the fixture is requested.
+Step 3: BUT instead of returning a VALUE, it returns a FUNCTION (get_airflow_variable).
+Step 4: Now your test gets that INNER function. You call it with different variable names, and it fetches different env vars.
+
+WHY DO THIS INSTEAD OF JUST A REGULAR FUNCTION?
+Approach                  What Happens                                  Problem
+Regular function          get_env_var("DB_PASS")                        Works fine, but not a "fixture" – can't use dependency injection
+Fixture returning value	  return os.getenv("SOMETHING")	                Only returns ONE hardcoded value
+THIS NESTED APPROACH      Returns a FUNCTION that can return ANY value	You get FLEXIBILITY + FIXTURE MAGIC
+
+"""
 @pytest.fixture
 def airflow_variable():
+    """
+    How to use it:
+    def test_database_connection(airflow_variable):
+        -> airflow_variable is actually the INNER function
+        db_pass = airflow_variable("DB_PASSWORD")  Gets AIRFLOW_VAR_DB_PASSWORD
+        db_user = airflow_variable("DB_USER")      Gets AIRFLOW_VAR_DB_USER
+    """
     def get_airflow_variable(variable_name):
         """
         This function will return the value of the variables from the environment by specifying the varialbe name as an argument.
@@ -72,3 +102,36 @@ def airflow_variable():
         env_var = f"AIRFLOW_VAR_{variable_name.upper()}"
         return os.getenv(env_var)
     return get_airflow_variable
+
+
+@pytest.fixture
+def real_postgres_connection():
+    """
+    Function that will get the real credentials for the db connection
+    The connection to PostgreSQL db will be established by using the Psycopg2 library.
+    --> import it to use it
+    """
+    dbname = os.getenv("ELT_DATABASE_NAME")
+    user = os.getenv("ELT_DATABASE_USERNAME")
+    password = os.getenv("ELT_DATABASE_PASSWORD")
+    host = os.getenv("POSTGRES_CONN_HOST")
+    port = os.getenv("POSTGRES_CONN_PORT")
+    
+    conn = None
+
+    try:
+        conn = psycopg2.connect(
+            dbname=dbname, 
+            user=user,
+            password=password,
+            host=host,
+            port=port
+        )
+        yield conn
+    except psycopg2.Error as e:
+        pytest.fail(f"Failed to connect to the database: {e}")
+    finally: # MAKE SURE TO CLOSE THE CONNECTION
+        if conn:
+            conn.close()
+
+        
