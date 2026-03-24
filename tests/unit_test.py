@@ -44,8 +44,8 @@ def test_dags_integrity(dagbag):
     # 4. Finally we assert that all the DAGs have the expected number of tasks.
     # So, first we define a dictionary with key-value pairs being the DAG ID and the expected task count for each DAG
     expected_task_count = {
-        "produce_json": 4,
-        "update_db": 2,
+        "produce_json": 5,
+        "update_db": 3,
         "data_quality": 2    
     }
     print("==========================")
