@@ -14,7 +14,7 @@ on:
 
 jobs: # Let's start defining the CI jobs with the first CI job being building & pushing the Docker image if either the docker file or requirements.txt change.
   build-and-push-image: # This is the name of the job
-    runs-on: ubuntu-latesst # This is the runner, which is an environment where the job is executed and GitHub will provide a hosted Virtual Machine.
+    runs-on: ubuntu-latest # This is the runner, which is an environment where the job is executed and GitHub will provide a hosted Virtual Machine.
     steps: # Steps to be executed
       - name: Checkout code
         uses: actions/checkout@v6 # GitHub actions provides this built-in CheckOut Actions which allows you to have access to your code base
