@@ -52,7 +52,7 @@ jobs: # Let's start defining the CI jobs with the first CI job being building & 
 # NOW, WE PROCEED TO DEFINE THE 2ND JOB. THIS JOB WILL ONLY NEED TO RUN IF CERTAIN FILES WITHIN OUR CODEBASE CHANGE. HERE WE WILL INTRODUCE THE CONCEPT OF JOB DEPENDENCIES
 # So, let's follow the same strucure as the the 1st job and give it and appropiate name such as this:
   unit-and-integration-and-e2e-tests:
-    runs-on: ubuntu-latesst
+    runs-on: ubuntu-latest
     needs: build-and-push-image
 # This is the name of the first job. This basically says that build-and-push-image has to complete successfully so the 2nd job can run.
 # Now, we need to tell the YAML where it should be looking for the credentials, since we're not using the ".env" in our CI/CD process for obvious reasons
