@@ -64,7 +64,7 @@ x-airflow-common:
     # URL for the Redis message broker - handles the communication and task distribution between the scheduler and workers
     AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
     # Key for encrypting data
-    AIRFLOW__CORE__FERNET_KEY: "${FERNET_KEY}"
+    AIRFLOW__CORE__FERNET_KEY: ${FERNET_KEY}
     # New DAGs are paused by default
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     # Set to false to remove default DAGs - https://stackoverflow.com/questions/43410836/how-to-remove-default-example-dags-in-airflow
