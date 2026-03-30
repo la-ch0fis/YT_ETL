@@ -20,7 +20,7 @@ jobs: # Let's start defining the CI jobs with the first CI job being building & 
         uses: actions/checkout@v6 # GitHub actions provides this built-in CheckOut Actions which allows you to have access to your code base
       - name: Get changed files # Changed files: Effortlessly track all changed files and directories relative to a target branch.
         id: changed-files-build # ID of the step 
-        uses: tj-actions/changed-files@v46 # Built in we're using and its version, this can be found in the GitHub official repo https://github.com/tj-actions/changed-files?tab=readme-ov-file
+        uses: tj-actions/changed-files@v47 # Built in we're using and its version, this can be found in the GitHub official repo https://github.com/tj-actions/changed-files?tab=readme-ov-file
         with: # We specify the name of the files we'd like to monitor
           files: | 
             Dockerfile
@@ -81,7 +81,7 @@ jobs: # Let's start defining the CI jobs with the first CI job being building & 
         uses: actions/checkout@v6 
       - name: Get changed files
         id: changed-files-tests
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with: # Files to be monitored for changes
           files: |
               dags/**
