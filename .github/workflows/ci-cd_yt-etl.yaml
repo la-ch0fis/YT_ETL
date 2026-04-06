@@ -76,9 +76,6 @@ jobs:
               dags/**
               include/**
               docker-compose.yaml
-      - name: Make init script executable
-        if: steps.changed-files-tests.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
-        run: chmod +x ./docker/postgres/init-multiple-databases.sh
       - name: Set up Docker Compose
         if: steps.changed-files-tests.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
         run: docker compose up -d
