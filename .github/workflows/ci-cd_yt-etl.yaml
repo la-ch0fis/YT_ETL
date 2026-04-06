@@ -109,7 +109,16 @@ jobs:
         run: docker exec -t airflow-worker sh -c "pytest tests/ -v"
       - name: Run End-to-End DAG Tests
         if: steps.changed-files-tests.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
+# 1. Giving this MOFO scheduler 15-20 seconds to actually wake up ay ay ay!!!!
         run: |
+          echo "Wating for Airflow Scheduler to warm up..."
+          sleep 20
+          
+          # 2. Force Airflow to parse the DAGs and sync them to the DB
+          echo "Syncing DAGs to the database..."
+          docker exec -t airflow-worker airflow dags list
+          
+          # 3. Now run the tests
           DAG_NAMES=("produce_json" "update_db" "data_quality") 
           for DAG in "${DAG_NAMES[@]}"; do
             docker exec -t airflow-worker sh -c "airflow dags test $DAG"
