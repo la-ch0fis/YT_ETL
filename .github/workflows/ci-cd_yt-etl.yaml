@@ -79,6 +79,31 @@ jobs:
       - name: Set up Docker Compose
         if: steps.changed-files-tests.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
         run: docker compose up -d
+      - name: Wait for containers to be healthy, Cochise!!
+        run: |
+          TIMEOUT=120 
+          INTERVAL=2
+          elapsed=0
+          while [ $elapsed -lt $TIMEOUT ]; do
+            unhealthy=$(docker ps --filter "health=unhealthy" --format "table {{.Names}}" | tail -n +2)
+            if [ -z "$unhealthy" ]; then
+              echo "All containers are healthy!"
+              exit 0
+            fi
+            echo "Waiting for my ruca: $unhealthy (${elapsed}s elapsed)"
+            sleep $INTERVAL
+            elapsed=$((elapsed + INTERVAL))
+          done
+          echo "Timeout after ${TIMEOUT}s. Unhealthy containers:"
+          docker compose logs
+          exit 1
+      - name: Dump Docker logs on failure
+        if: failure()
+        run: |
+          echo "== CONTAINER STATUS =="
+          docker ps -a
+          echo "== DOCKER COMPOSE LOGS =="
+          docker compose logs
       - name: Run Unit Integration Tests
         if: steps.changed-files-tests.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
         run: docker exec -t airflow-worker sh -c "pytest tests/ -v"
